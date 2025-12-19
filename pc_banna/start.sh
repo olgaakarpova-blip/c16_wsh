@@ -175,7 +175,7 @@ fi
 sleep 5
 # Mount Samba share on srv_samba
 if ! mount -t cifs //192.168.103.22/Share /mnt/Share \
-  -o username=${SAMBA_USER},password="${SAMBA_PASSWORD}",vers=3.0,iocharset=utf8,uid=$(id -u b.anna),gid=$(id -g b.anna); then
+  -o username=${SAMBA_USER},password="${SAMBA_PASSWORD}",vers=3.0,uid=$(id -u b.anna),gid=$(id -g b.anna); then
   echo 'WARNING: failed to mount //192.168.103.22/Share, continuing without mapped drive' >&2
 fi
 
