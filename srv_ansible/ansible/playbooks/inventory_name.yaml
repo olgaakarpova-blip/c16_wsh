@@ -2,45 +2,37 @@
 - name: Check hostname standards
   hosts: all
   gather_facts: false
-
-  vars:
-    # Regular expressions for validation
-    server_pattern: '^(prod|test|dev|stage)-[a-z0-9]+-[a-z]+-\d{2}$'
-    pc_pattern: '^[a-z]+-(linux|windows|macos)-\d{3}$'
-
   tasks:
+    - name: Get real hostname from system
+      ansible.builtin.shell:
+        cmd: "hostname"
+      register: real_hostname
+      changed_when: false  # Это не меняет систему, только получает данные
+
     - name: Check servers in dmz and servers groups
       block:
-        - name: Validate server name
+        - name: Show error for wrong server names
           fail:
-            msg: "❌ SERVER '{{ inventory_hostname }}' is INVALID! Must be: prod-role-location-01 (Example: prod-web-dmz-01)"
-          when: not inventory_hostname is regex(server_pattern)
+            msg: "❌ Server '{{ real_hostname.stdout }}' is wrong! Example: prod-web-dmz-01"
+          when: "'prod-' not in real_hostname.stdout and 'test-' not in real_hostname.stdout and 'dev-' not in real_hostname.stdout and 'stage-' not in real_hostname.stdout"
           ignore_errors: yes
 
-        - name: Show success for servers
+        - name: Show success for correct server names
           debug:
-            msg: "✅ SERVER '{{ inventory_hostname }}' is CORRECT"
-          when: inventory_hostname is regex(server_pattern)
+            msg: "✅ Server '{{ real_hostname.stdout }}' is good"
+          when: "'prod-' in real_hostname.stdout or 'test-' in real_hostname.stdout or 'dev-' in real_hostname.stdout or 'stage-' in real_hostname.stdout"
       when: "'dmz' in group_names or 'servers' in group_names"
 
     - name: Check user PCs in users group
       block:
-        - name: Validate PC name
+        - name: Show error for wrong PC names
           fail:
-            msg: "❌ USER PC '{{ inventory_hostname }}' is INVALID! Must be: username-os-001 (Example: petrovich-linux-001)"
-          when: not inventory_hostname is regex(pc_pattern)
+            msg: "❌ PC '{{ real_hostname.stdout }}' is wrong! Example: petrovich-linux-001"
+          when: "'-linux-' not in real_hostname.stdout and '-windows-' not in real_hostname.stdout and '-macos-' not in real_hostname.stdout"
           ignore_errors: yes
 
-        - name: Show success for user PCs
+        - name: Show success for correct PC names
           debug:
-            msg: "✅ USER PC '{{ inventory_hostname }}' is CORRECT"
-          when: inventory_hostname is regex(pc_pattern)
+            msg: "✅ PC '{{ real_hostname.stdout }}' is good"
+          when: "'-linux-' in real_hostname.stdout or '-windows-' in real_hostname.stdout or '-macos-' in real_hostname.stdout"
       when: "'users' in group_names"
-
-    - name: Show warning for hosts without proper groups
-      debug:
-        msg: "⚠️  Host '{{ inventory_hostname }}' is not in any checked groups (dmz, servers, users)"
-      when: 
-        - "'dmz' not in group_names"
-        - "'servers' not in group_names"
-        - "'users' not in group_names"
