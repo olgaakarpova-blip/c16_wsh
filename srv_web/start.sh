@@ -10,7 +10,7 @@ ip route del default 2>/dev/null || true
 ip route add default via "$GATEWAY_IP" || true
 
 # Packages
-apk add bash nginx openssh iproute2 sudo openssl shadow nano
+apt-get install nginx openssl
 
 useradd -m -s /bin/bash -p "${PETROVICH_HASH}" petrovich || true
 
