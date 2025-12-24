@@ -54,7 +54,7 @@ services:
   prod-nginx-msk01:
     hostname: prod-nginx-msk01
     depends_on: [ fw ]
-    build: ./app_empty
+    build: ./srv_web
     container_name: prod-nginx-msk01
     cap_add: [ "NET_ADMIN" ]
     restart: always
