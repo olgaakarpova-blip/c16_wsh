@@ -1,6 +1,16 @@
-FROM alpine:3.20
+FROM ubuntu:22.04
 
-RUN apk add --no-cache coredns iproute2 shadow bash sudo openssh 
+ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    coredns \
+    iproute2 \
+    shadow \
+    bash \
+    sudo \
+    openssh-server \
+ && rm -rf /var/lib/apt/lists/*
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
