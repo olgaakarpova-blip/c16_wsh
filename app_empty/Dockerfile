@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 RUN apt-get update \
  && apt-get install -y \
-    openssh-server \
+    openssh-client \
     sudo \
     iproute2 \
     curl \
@@ -15,6 +15,7 @@ RUN apt-get update \
     python3 python3-venv python3-pip \
     tcpdump \
     dnsutils \
+    vim \
  && rm -rf /var/lib/apt/lists/*
 
 COPY start.sh /usr/local/bin/start.sh
