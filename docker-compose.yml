@@ -51,11 +51,11 @@ services:
       - ANSIBLE_HASH=${ANSIBLE_HASH}
       - GATEWAY_IP=192.168.103.254
 
-  srv_web:
-    hostname: srv_web
+  prod-nginx-msk01:
+    hostname: prod-nginx-msk01
     depends_on: [ fw ]
     image: alpine:3.20
-    container_name: srv_web
+    container_name: prod-nginx-msk01
     cap_add: [ "NET_ADMIN" ]
     restart: always
     networks:
@@ -77,28 +77,6 @@ services:
       - PETROVICH_HASH=${PETROVICH_HASH}
     dns: [ 192.168.103.24 ]
 
-  srv_bunkerweb:
-    image: bunkerity/bunkerweb-all-in-one:1.6.5
-    container_name: srv_bunkerweb
-    depends_on: [ fw ]
-    cap_add: [ "NET_ADMIN" ]
-    user: root
-    restart: always    
-    environment:
-      - USE_REDIS=no
-      - GATEWAY_IP=192.168.102.254
-      - ANSIBLE_HASH=${ANSIBLE_HASH}      
-      # Optionally set an admin override token
-      # API_TOKEN: "changeme"
-    volumes:
-      - ./srv_bunkerweb/data:/data
-      - ./srv_bunkerweb/start.sh:/start.sh:ro
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw        
-    dns: [ 192.168.103.24 ]
-    entrypoint: ["/bin/sh", "/start.sh"] 
-    networks:
-      dmz_net:
-        ipv4_address: 192.168.102.14
      
   pc_petrovich:
     # user: petrovich
@@ -140,120 +118,7 @@ services:
       - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw      
     dns: [ 192.168.103.24 ]
 
-  pc_trust:
-    # user: trust 
-    hostname: pc_trust
-    depends_on: [ fw ]
-    build: ./app_empty
-    container_name: pc_trust
-    cap_add: [ "NET_ADMIN" ]
-    restart: always
-    networks:
-      users_net:
-        ipv4_address: 192.168.101.5
-    environment:
-      - ANSIBLE_HASH=${ANSIBLE_HASH}
-      - TRUST_HASH=${TRUST_HASH}
-      - GATEWAY_IP=192.168.101.254    
-      - USERNAME=trust  
-    volumes:
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw      
-    dns: [ 192.168.103.24 ]
-
-  pc_banna:
-    hostname: pc_banna
-    # user: b.anna 
-    depends_on: [ fw, srv_samba]
-    build: ./pc_banna
-    container_name: pc_banna
-    cap_add:
-      - NET_ADMIN
-      - SYS_ADMIN
-    devices:
-      - /dev/fuse
-    security_opt:
-      - apparmor:unconfined    
-    restart: always
-    networks:
-      users_net:
-        ipv4_address: 192.168.101.3
-    volumes:
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw
-    environment:
-      - ANSIBLE_HASH=${ANSIBLE_HASH}
-      - B_ANNA_HASH=${B_ANNA_HASH}
-      - SAMBA_USER=${SAMBA_USER}
-      - SAMBA_PASSWORD=${SAMBA_PASSWORD}
-      - GATEWAY_IP=192.168.101.254          
-    dns: [ 192.168.103.24 ]
-    # для мониторования шар автоматического (иначе не удалось добиться):
-    privileged: true
-  
-  pc_bastion:
-    depends_on: [ fw ]
-    build: ./pc_bastion
-    container_name: pc_bastion
-    hostname: pc_bastion
-    restart: always
-    cap_add: [ "NET_ADMIN" ]    
-    networks:
-      admin_net:
-        ipv4_address: 192.168.104.2
-    environment:
-      - GATEWAY_IP=192.168.104.254
-      - B_ANNA_HASH=${B_ANNA_HASH}
-      - PETROVICH_HASH=${PETROVICH_HASH}
-      - TRUST_HASH=${TRUST_HASH}
-      - ANSIBLE_HASH=${ANSIBLE_HASH}      
-    volumes:
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw
-    dns: [ 192.168.103.24 ]
-    tty: true
-
-  srv_mail:
-    depends_on: [ fw ]
-    build: ./srv_mail
-    container_name: srv_mail
-    hostname: srv_mail
-    domainname: darkstore.local
-    shm_size: "256m"
-    restart: always
-    cap_add: [ "NET_ADMIN" ]    
-    networks:
-      dmz_net:
-        ipv4_address: 192.168.102.20
-    # no host port publishing; access via fw DNAT
-    environment:
-      # Hostname/FQDN
-      - DMS_HELO_NAME=mail.darkstore.local
-      # Enable core filtering stack
-      - ENABLE_RSPAMD=1
-      - ENABLE_CLAMAV=1
-      - ENABLE_POSTSCREEN=0
-      - POSTSCREEN_ACTION=ignore
-      - ENABLE_DNSBL=0
-      - PERMIT_DOCKER=connected-networks
-      # DKIM auto-generation for darkstore.local
-      - ENABLE_OPENDKIM=1
-      - DKIM_AUTOGENERATE=1
-      - DKIM_SELECTOR=mail
-      # IMAP/POP internal only (no host port publishing)
-      - ENABLE_IMAP=1
-      - ENABLE_POP3=1
-      # Disable TLS (lab only) вЂ“ see postfix/dovecot overrides in config
-      - SSL_TYPE=manual
-      - SSL_CERT_PATH=/tmp/docker-mailserver/ssl/cert.pem
-      - SSL_KEY_PATH=/tmp/docker-mailserver/ssl/key.pem
-      - ANSIBLE_HASH=${ANSIBLE_HASH}
-      - RSPAMD_PASSWORD=${ANSIBLE_HASH}
-      - GATEWAY_IP=192.168.102.254      
-    volumes:
-      - ./srv_mail/config/:/tmp/docker-mailserver/
-      - ./srv_mail/amavis/50-user:/etc/amavis/conf.d/50-user:rw
-      - ./srv_mail/rspamd/:/tmp/docker-mailserver/rspamd/
-      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw     
-    dns: [ 192.168.103.24 ]
-    
+      
   srv_ansible:
     hostname: srv_ansible
     depends_on: [ fw ]
