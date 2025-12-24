@@ -10,6 +10,7 @@ RUN apt-get update \
     sudo \
     openssh-server \
     ca-certificates \
+    python3 \
     wget \
  && rm -rf /var/lib/apt/lists/*
 
