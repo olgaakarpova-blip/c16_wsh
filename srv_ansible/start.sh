@@ -45,23 +45,23 @@ chown root:root "${SUDOERS_FILE}"
 chmod 0440 "${SUDOERS_FILE}"
 
 
-#разворачиваем kesl
-cat >/home/ansible/kesl.ini <<EOF
-EULA_AGREED=yes
-PRIVACY_POLICY_AGREED=yes
-SERVICE_LOCALE=en_US.UTF-8
-USE_KSN=yes
-USE_GUI=no
-INSTALL_LICENSE=
-GROUP_CLEAN=no
-ScanMemoryLimit=2048
-USE_SYSTEMD=yes
-EOF
-chown ansible:ansible /home/ansible/kesl.ini
+# #разворачиваем kesl
+# cat >/home/ansible/kesl.ini <<EOF
+# EULA_AGREED=yes
+# PRIVACY_POLICY_AGREED=yes
+# SERVICE_LOCALE=en_US.UTF-8
+# USE_KSN=yes
+# USE_GUI=no
+# INSTALL_LICENSE=
+# GROUP_CLEAN=no
+# ScanMemoryLimit=2048
+# USE_SYSTEMD=yes
+# EOF
+# chown ansible:ansible /home/ansible/kesl.ini
 
 
-sudo apt-get install /tmp/kesl_12.3.0-1162_amd64.deb
-sudo /opt/kaspersky/kesl/bin/kesl-setup.pl --autoinstall=/home/ansible/kesl.ini
+# sudo apt-get install /tmp/kesl_12.3.0-1162_amd64.deb
+# sudo /opt/kaspersky/kesl/bin/kesl-setup.pl --autoinstall=/home/ansible/kesl.ini
 
 
 # Keep container alive
