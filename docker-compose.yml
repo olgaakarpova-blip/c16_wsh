@@ -118,7 +118,8 @@ services:
       - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw      
     dns: [ 192.168.103.24 ]
 
-      
+  
+    
   srv_ansible:
     hostname: srv_ansible
     depends_on: [ fw ]
@@ -164,7 +165,28 @@ services:
       - SAMBA_SHARE_NAME=${SAMBA_SHARE_NAME}
       - GATEWAY_IP=192.168.103.254
     dns: [ 192.168.103.24 ]
-    
+  
+  pc_bastion:
+    depends_on: [ fw ]
+    build: ./pc_bastion
+    container_name: pc_bastion
+    hostname: pc_bastion
+    restart: always
+    cap_add: [ "NET_ADMIN" ]    
+    networks:
+      admin_net:
+        ipv4_address: 192.168.104.2
+    environment:
+      - GATEWAY_IP=192.168.104.254
+      - B_ANNA_HASH=${B_ANNA_HASH}
+      - PETROVICH_HASH=${PETROVICH_HASH}
+      - TRUST_HASH=${TRUST_HASH}
+      - ANSIBLE_HASH=${ANSIBLE_HASH}      
+    volumes:
+      - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw
+    dns: [ 192.168.103.24 ]
+    tty: true
+
   srv_dns:
     hostname: srv_dns
     depends_on: [ fw ]
