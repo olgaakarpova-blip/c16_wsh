@@ -22,7 +22,7 @@ chmod 600 /home/ansible/.bashrc
 useradd -m -s /bin/bash -p "${PETROVICH_HASH}" petrovich || true
 
 chown -R ansible:ansible /workspace
-chmod 700 /workspace/inventory
+chmod 777 /workspace/inventory/*
 chmod 777 /workspace/playbooks/*
 
 set -eu
