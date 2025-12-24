@@ -61,7 +61,7 @@ chown ansible:ansible /home/ansible/kesl.ini
 
 
 sudo apt-get install /tmp/kesl_12.3.0-1162_amd64.deb
-sudo /opt/kaspersky/kesl/bin/kesl-setup.pl --autoinstall=/home/admin/kesl.ini
+sudo /opt/kaspersky/kesl/bin/kesl-setup.pl --autoinstall=/home/ansible/kesl.ini
 
 
 # Keep container alive
