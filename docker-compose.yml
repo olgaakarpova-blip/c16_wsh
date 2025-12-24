@@ -54,7 +54,7 @@ services:
   prod-nginx-msk01:
     hostname: prod-nginx-msk01
     depends_on: [ fw ]
-    image: alpine:3.20
+    build: ./app_empty
     container_name: prod-nginx-msk01
     cap_add: [ "NET_ADMIN" ]
     restart: always
@@ -80,7 +80,7 @@ services:
      
   pc_petrovich:
     # user: petrovich
-    hostname: pc_petrovich
+    hostname: petrovich-ubuntu-003
     depends_on: [ fw ]
     build: ./app_empty
     container_name: pc_petrovich
@@ -118,7 +118,6 @@ services:
       - ./ansible_agent_deploy.sh:/usr/local/bin/ansible_agent_deploy.sh:rw      
     dns: [ 192.168.103.24 ]
 
-  
     
   srv_ansible:
     hostname: srv_ansible

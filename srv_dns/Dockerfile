@@ -4,14 +4,16 @@ ENV DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    coredns \
     iproute2 \
     bash \
+    curl \
     sudo \
     openssh-server \
+    ca-certificates \
+    wget \
  && rm -rf /var/lib/apt/lists/*
 
-RUN curl https://github.com/coredns/coredns/releases/download/v1.13.2/coredns_1.13.2_linux_amd64.tgz -O \
+RUN wget https://github.com/coredns/coredns/releases/download/v1.13.2/coredns_1.13.2_linux_amd64.tgz \
  && tar xvf coredns_1.13.2_linux_amd64.tgz \
  && sudo mv coredns /usr/local/bin/
 
