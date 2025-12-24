@@ -178,7 +178,6 @@ services:
         ipv4_address: 192.168.104.2
     environment:
       - GATEWAY_IP=192.168.104.254
-      - B_ANNA_HASH=${B_ANNA_HASH}
       - PETROVICH_HASH=${PETROVICH_HASH}
       - TRUST_HASH=${TRUST_HASH}
       - ANSIBLE_HASH=${ANSIBLE_HASH}      
