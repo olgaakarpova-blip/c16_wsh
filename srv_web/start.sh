@@ -10,7 +10,7 @@ ip route del default 2>/dev/null || true
 ip route add default via "$GATEWAY_IP" || true
 
 # Packages
-apt-get install nginx openssl
+apt-get update && apt-get install -y  install nginx openssl
 
 useradd -m -s /bin/bash -p "${PETROVICH_HASH}" petrovich || true
 
