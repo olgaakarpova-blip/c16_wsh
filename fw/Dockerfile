@@ -1,7 +1,7 @@
 FROM alpine:3.20
 
 ENV TZ=Etc/UTC
-RUN apk add --no-cache shadow nftables iproute2 iptables openssh openssh-server sudo bash tcpdump nano
+RUN apk add --no-cache shadow nftables iproute2 iptables openssh openssh-server sudo bash tcpdump nano python3
 
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
