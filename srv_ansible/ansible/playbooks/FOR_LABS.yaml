@@ -1,0 +1,57 @@
+---
+- name: Проверка соответствия имен хостов стандартам
+  hosts: all
+  gather_facts: false
+  vars:
+    # Регулярные выражения для проверки имен
+    server_name_regex: '^(prod|test|dev|stage)-[a-z0-9]+-[a-z]+-\d{2}$'
+    user_pc_name_regex: '^[a-z]+-(linux|windows|macos)-\d{3}$'
+    
+    # Группы для проверки
+    server_groups:
+      - dmz
+      - servers
+    
+    user_groups:
+      - users
+
+  tasks:
+    - name: Определяем тип устройства по группе
+      set_fact:
+        device_type: >-
+          {% if group_names | intersect(server_groups) | length > 0 %}server
+          {% elif group_names | intersect(user_groups) | length > 0 %}user_pc
+          {% else %}unknown{% endif %}
+      when: "'localhost' not in inventory_hostname"
+
+    - name: Проверяем имена серверов
+      fail:
+        msg: |
+          Некорректное имя сервера: {{ inventory_hostname }}
+          Ожидаемый формат: [Среда]-[Роль]-[Локация]-[Номер]
+          Пример: prod-nginx-msk-01
+          Среда: prod, test, dev, stage
+          Номер: две цифры (01, 02, и т.д.)
+      when: 
+        - device_type == 'server'
+        - inventory_hostname is not regex(server_name_regex)
+
+    - name: Проверяем имена пользовательских ПК
+      fail:
+        msg: |
+          Некорректное имя ПК: {{ inventory_hostname }}
+          Ожидаемый формат: [Логин]-[Тип ОС]-[Номер]
+          Пример: petrovich-linux-045
+          Тип ОС: linux, windows, macos
+          Номер: три цифры (001, 045, и т.д.)
+      when: 
+        - device_type == 'user_pc'
+        - inventory_hostname is not regex(user_pc_name_regex)
+
+    - name: Выводим информацию о корректных именах
+      debug:
+        msg: "Имя {{ inventory_hostname }} соответствует стандарту для {{ device_type }}"
+      when: 
+        - device_type in ['server', 'user_pc']
+        - (device_type == 'server' and inventory_hostname is regex(server_name_regex))
+          or (device_type == 'user_pc' and inventory_hostname is regex(user_pc_name_regex))
