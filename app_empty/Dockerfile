@@ -1,6 +1,19 @@
 FROM ubuntu:22.04
 
-RUN apt-get install openssh iproute2 curl bash sudo tcpdump shadow python3
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC
+
+RUN apt-get update \
+ && apt-get install -y \
+    openssh-server \
+    iproute2 \
+    curl \
+    bash \
+    sudo \
+    tcpdump \
+    shadow \
+    python3 \
+ && rm -rf /var/lib/apt/lists/*
 
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
