@@ -1,4 +1,7 @@
 ---
+- name: Import inventory audit playbook
+  import_playbook: "/workspace/playbooks/inventory_name.yaml"
+
 - name: Import Nginx audit playbook
   import_playbook: "/workspace/playbooks/nginx_check.yml"
 
