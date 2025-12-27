@@ -20,7 +20,7 @@ services:
       - "7000:7000"
 
   fw:
-    hostname: fw
+    hostname: prod-firewall-msk-02
     depends_on:
       - nat
     build: ./fw
@@ -52,7 +52,7 @@ services:
       - GATEWAY_IP=192.168.103.254
 
   prod-nginx-msk01:
-    hostname: prod-nginx-msk01
+    hostname: prod-nginx-msk-01
     depends_on: [ fw ]
     build: ./srv_web
     container_name: prod-nginx-msk01
@@ -80,7 +80,7 @@ services:
      
   pc_petrovich:
     # user: petrovich
-    hostname: petrovich-ubuntu-003
+    hostname: petrovich-linux-003
     depends_on: [ fw ]
     build: ./app_empty
     container_name: pc_petrovich
